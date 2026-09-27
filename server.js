@@ -1,44 +1,31 @@
 const express = require("express");
-const http = require("http");
 const path = require("path");
+const http = require("http");
 const { Server } = require("socket.io");
-const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
+const io = new Server(server);
 
-const io = new Server(server, {
-  cors: { origin: "*" }
-});
+// Serve files from the repo root
+app.use(express.static(__dirname));
 
-app.use(cors());
-app.use(express.json());
-
-// Serve your website files
-app.use(express.static(path.join(__dirname, "public")));
-
-// Homepage -> index.html
+// Homepage
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Server status API
+// Status API
 app.get("/status", (req, res) => {
   res.json({ online: true });
 });
 
-let messages = [];
-
+// Chat
 io.on("connection", (socket) => {
-  socket.emit("history", messages);
-
-  socket.on("chat", (msg) => {
-    messages.push(msg);
-    io.emit("chat", msg);
-  });
+  socket.on("chat", (msg) => io.emit("chat", msg));
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
   console.log(`BopiVerse running on port ${PORT}`);
 });
