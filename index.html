@@ -10,14 +10,14 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{
   font-family:Segoe UI,Arial,sans-serif;
-  background:linear-gradient(180deg,#8ecbff,#dff4ff);
+  background:linear-gradient(180deg,#87CEFA,#DFF6FF);
   color:#123;
 }
 .glass{
   background:rgba(255,255,255,.25);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,.4);
-  border-radius:24px;
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.45);
+  border-radius:22px;
   box-shadow:0 8px 30px rgba(0,0,0,.1);
 }
 #auth{
@@ -27,14 +27,14 @@ body{
   align-items:center;
   padding:20px;
 }
-.box{width:100%;max-width:430px;padding:24px}
+.box{width:100%;max-width:430px;padding:25px}
 input,textarea{
   width:100%;
   padding:12px;
   margin:8px 0;
   border:none;
   border-radius:12px;
-  background:rgba(255,255,255,.7);
+  background:rgba(255,255,255,.75);
 }
 button{
   width:100%;
@@ -42,31 +42,37 @@ button{
   margin-top:8px;
   border:none;
   border-radius:12px;
-  background:#2f7df6;
-  color:white;
+  background:#2F7DF6;
+  color:#fff;
   font-weight:bold;
   cursor:pointer;
 }
 header{
-  position:sticky;
-  top:0;
-  padding:16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
+  padding:15px;
+  position:sticky;
+  top:0;
 }
 nav button{
   width:auto;
-  margin:2px;
+  margin-left:5px;
   padding:10px 14px;
 }
 .page{
   display:none;
   max-width:1100px;
-  margin:auto;
-  padding:20px;
+  margin:20px auto;
 }
 .active{display:block}
+.card{padding:18px}
+.community{
+  margin:10px 0;
+  padding:14px;
+  border-radius:15px;
+  background:rgba(255,255,255,.2);
+}
 .chat{
   height:300px;
   overflow:auto;
@@ -83,19 +89,15 @@ nav button{
   width:90px;
   height:90px;
   border-radius:50%;
+  background:#fff;
   object-fit:cover;
-  background:white;
 }
-.community{
-  padding:14px;
-  margin:10px 0;
-  border-radius:16px;
-  background:rgba(255,255,255,.18);
-}
+#msg{margin-top:10px;color:#b00020;font-weight:bold}
 </style>
 </head>
 <body>
 
+<!-- LOGIN / SIGNUP -->
 <section id="auth">
   <div class="box glass">
     <h1>🌍 BopiVerse</h1>
@@ -113,6 +115,7 @@ nav button{
   </div>
 </section>
 
+<!-- APP -->
 <section id="app" style="display:none">
 
 <header class="glass">
@@ -126,71 +129,60 @@ nav button{
   </nav>
 </header>
 
+<!-- HOME -->
 <div id="home" class="page active">
-  <div class="glass" style="padding:18px">
+  <div class="glass card">
     <h2>🎮 Game Feed</h2>
     <textarea id="postText" placeholder="Share the games you love..."></textarea>
     <input type="file" id="postImg" accept="image/*">
     <button onclick="createPost()">Post</button>
-
     <div id="feed"></div>
   </div>
 </div>
 
+<!-- COMMUNITIES -->
 <div id="communities" class="page">
-  <div class="glass" style="padding:18px">
+  <div class="glass card">
     <h2>👥 Communities</h2>
-
-    <div class="community">
-      <h3>Mario Fans</h3>
-      <p>Everything Mario.</p>
-    </div>
-
-    <div class="community">
-      <h3>Zelda Kingdom</h3>
-      <p>Discuss Zelda games.</p>
-    </div>
-
-    <div class="community">
-      <h3>Pokémon Club</h3>
-      <p>Battle & trade.</p>
-    </div>
+    <div class="community"><b>Mario Fans</b><p>Everything Mario.</p></div>
+    <div class="community"><b>Zelda Kingdom</b><p>Discuss Zelda.</p></div>
+    <div class="community"><b>Pokémon Club</b><p>Battle & Trade.</p></div>
+    <div class="community"><b>Splatoon Squad</b><p>Ink together!</p></div>
   </div>
 </div>
 
+<!-- CHAT -->
 <div id="chat" class="page">
-  <div class="glass" style="padding:18px">
+  <div class="glass card">
     <h2>🌐 Global Chat</h2>
-
     <div id="chatBox" class="chat">
-      <div><b>BopiBot:</b> Welcome!</div>
+      <div><b>BopiBot:</b> Welcome to BopiVerse!</div>
     </div>
-
     <input id="chatInput" placeholder="Message everyone...">
     <button onclick="sendMessage()">Send</button>
   </div>
 </div>
 
+<!-- VOICE -->
 <div id="voice" class="page">
-  <div class="glass" style="padding:18px">
+  <div class="glass card">
     <h2>🎙 Voice & Camera</h2>
-
     <div style="height:220px;border-radius:16px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px">
       📷 Camera Preview
     </div>
-
     <button>🎤 Mute</button>
     <button>📹 Camera</button>
   </div>
 </div>
 
+<!-- PROFILE -->
 <div id="profile" class="page">
-  <div class="glass" style="padding:18px">
-    <h2>👤 Profile</h2>
+  <div class="glass card">
+    <h2>👤 My Profile</h2>
 
     <img id="avatar" class="avatar">
 
-    <input type="file" id="avatarFile" accept="image/*" onchange="changeAvatar(event)">
+    <input type="file" accept="image/*" onchange="changeAvatar(event)">
     <input id="displayName" placeholder="Display Name">
     <textarea id="bio" placeholder="Description"></textarea>
 
@@ -201,103 +193,143 @@ nav button{
 </section>
 
 <script>
-const socket=io();
+const socket = io();
+let currentUser = "";
 
+// ---------- SIGN UP ----------
 function signup(){
-  if(pass.value!==confirm.value){
-    msg.innerText="Passwords do not match";
+  const username = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("pass").value;
+  const confirm = document.getElementById("confirm").value;
+
+  if(username===""){
+    msg.innerText="Enter a Bopi Name.";
+    return;
+  }
+
+  if(password===""){
+    msg.innerText="Enter a Password.";
+    return;
+  }
+
+  if(password !== confirm){
+    msg.innerText="Passwords don't match.";
     return;
   }
 
   const user={
-    name:name.value,
-    email:email.value,
-    pass:pass.value,
+    name:username,
+    email:email,
+    password:password,
     bio:"",
     avatar:""
   };
 
   localStorage.setItem("bopi",JSON.stringify(user));
+  currentUser=username;
   enter();
 }
 
+// ---------- LOGIN ----------
 function login(){
-  const u=JSON.parse(localStorage.getItem("bopi"));
+  const user=JSON.parse(localStorage.getItem("bopi"));
 
-  if(!u){
-    msg.innerText="No account";
+  if(!user){
+    msg.innerText="No account found.";
     return;
   }
 
-  if(name.value!==u.name||pass.value!==u.pass){
-    msg.innerText="Wrong login";
+  const username=document.getElementById("name").value.trim();
+  const password=document.getElementById("pass").value;
+
+  if(username!==user.name || password!==user.password){
+    msg.innerText="Wrong Bopi Name or Password.";
     return;
   }
 
+  currentUser=user.name;
   enter();
 }
 
+// ---------- ENTER ----------
 function enter(){
   const u=JSON.parse(localStorage.getItem("bopi"));
+
   auth.style.display="none";
   app.style.display="block";
+
   displayName.value=u.name;
   bio.value=u.bio;
   if(u.avatar) avatar.src=u.avatar;
 }
 
+// ---------- NAVIGATION ----------
 function openPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
+// ---------- POSTS ----------
 function createPost(){
+  if(postText.value.trim()==="") return;
+
   const div=document.createElement("div");
   div.className="post";
-  div.innerHTML="<h3>"+displayName.value+"</h3><p>"+postText.value+"</p>";
+  div.innerHTML=`<h3>${displayName.value}</h3><p>${postText.value}</p>`;
 
   const file=postImg.files[0];
   if(file){
-    const r=new FileReader();
-    r.onload=e=>{
-      div.innerHTML+=`<img src="${e.target.result}" style="width:100%;border-radius:12px;margin-top:10px">`;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      div.innerHTML += `<img src="${e.target.result}" style="width:100%;border-radius:12px;margin-top:10px">`;
     };
-    r.readAsDataURL(file);
+    reader.readAsDataURL(file);
   }
 
   feed.prepend(div);
   postText.value="";
+  postImg.value="";
 }
 
+// ---------- CHAT ----------
 function sendMessage(){
-  const text=chatInput.value;
-  if(!text) return;
+  const text=chatInput.value.trim();
+  if(text==="") return;
 
-  socket.emit("chat",{user:displayName.value,text});
+  socket.emit("chat",{
+    user:displayName.value,
+    text:text
+  });
+
   chatInput.value="";
 }
 
 socket.on("chat",m=>{
-  chatBox.innerHTML+=`<div><b>${m.user}:</b> ${m.text}</div>`;
+  chatBox.innerHTML += `<div><b>${m.user}:</b> ${m.text}</div>`;
   chatBox.scrollTop=chatBox.scrollHeight;
 });
 
+// ---------- PROFILE ----------
 function changeAvatar(e){
-  const f=e.target.files[0];
-  if(!f) return;
+  const file=e.target.files[0];
+  if(!file) return;
 
-  const r=new FileReader();
-  r.onload=x=>avatar.src=x.target.result;
-  r.readAsDataURL(f);
+  const reader=new FileReader();
+  reader.onload=x=>avatar.src=x.target.result;
+  reader.readAsDataURL(file);
 }
 
 function saveProfile(){
   const u=JSON.parse(localStorage.getItem("bopi"));
+
   u.name=displayName.value;
   u.bio=bio.value;
   u.avatar=avatar.src;
+
   localStorage.setItem("bopi",JSON.stringify(u));
-  alert("Profile saved");
+
+  alert("Profile saved!");
 }
 </script>
 
