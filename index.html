@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BopiVerse</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial;background:linear-gradient(180deg,#8ecbff,#dff3ff);color:#123}
+.glass{background:rgba(255,255,255,.28);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.45);border-radius:22px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+#auth{display:flex;justify-content:center;align-items:center;min-height:100vh;padding:24px}
+.authBox{width:100%;max-width:430px;padding:24px}
+input,textarea{width:100%;padding:12px;margin:8px 0;border-radius:12px;border:1px solid #cde;background:rgba(255,255,255,.7)}
+button{width:100%;padding:12px;border:none;border-radius:12px;background:#2f7df6;color:#fff;font-weight:700;cursor:pointer}
+a{color:#2f7df6;cursor:pointer;text-decoration:none}
+#app{display:none}
+header{position:sticky;top:0;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+nav button{width:auto;margin:0 4px;padding:10px 14px}
+.page{display:none;padding:20px;max-width:1100px;margin:auto}
+.page.active{display:block}
+.profile{display:flex;gap:16px;align-items:center}
+.avatar{width:90px;height:90px;border-radius:50%;background:#fff;object-fit:cover}
+.chat{height:300px;overflow:auto;padding:10px;border-radius:14px;background:rgba(255,255,255,.2)}
+.post{margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.35)}
+.badge{background:#e7f2ff;padding:4px 8px;border-radius:999px;font-size:12px;display:inline-block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.community{padding:14px;border-radius:16px;background:rgba(255,255,255,.18)}
+@media(max-width:700px){.grid{grid-template-columns:1fr}header{flex-direction:column;gap:8px}}
+</style>
+</head>
+<body>
+
+<section id="auth">
+  <div class="authBox glass">
+    <h1>🌍 BopiVerse</h1>
+    <p>Create your account</p>
+    <input id="bopiName" placeholder="Bopi Name">
+    <input id="email" type="email" placeholder="Email (optional)">
+    <input id="pass" type="password" placeholder="Password">
+    <input id="confirm" type="password" placeholder="Confirm Password">
+    <button onclick="signup()">Sign Up</button>
+    <p style="text-align:center;margin:14px 0">or</p>
+    <button onclick="login()" style="background:#5b9cff">Login</button>
+    <p id="authMsg"></p>
+  </div>
+</section>
+
+<section id="app">
+<header class="glass">
+  <strong>🌍 BopiVerse</strong>
+  <nav>
+    <button onclick="show('home')">Home</button>
+    <button onclick="show('communities')">Communities</button>
+    <button onclick="show('chat')">Global Chat</button>
+    <button onclick="show('voice')">Voice</button>
+    <button onclick="show('profile')">Profile</button>
+  </nav>
+</header>
+
+<div id="home" class="page active">
+  <div class="glass" style="padding:18px">
+    <h2>🎮 Home Feed</h2>
+    <textarea id="postText" placeholder="Share the games you love..."></textarea>
+    <input id="postImg" type="file" accept="image/*">
+    <button onclick="post()">Publish Post</button>
+    <div id="feed"></div>
+  </div>
+</div>
+
+<div id="communities" class="page">
+  <div class="glass" style="padding:18px">
+    <h2>👥 Communities</h2>
+    <div class="grid">
+      <div class="community"><h3>Mario Fans</h3><p>Discuss Mario games.</p></div>
+      <div class="community"><h3>Zelda Kingdom</h3><p>Share adventures.</p></div>
+      <div class="community"><h3>Animal Crossing</h3><p>Island creations.</p></div>
+      <div class="community"><h3>Pokémon Club</h3><p>Trade & battle.</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="chat" class="page">
+  <div class="glass" style="padding:18px">
+    <h2>🌐 Global Chat</h2>
+    <div class="chat" id="chatBox"><div><b>BopiBot:</b> Welcome!</div></div>
+    <input id="chatInput" placeholder="Type a message...">
+    <button onclick="send()">Send</button>
+  </div>
+</div>
+
+<div id="voice" class="page">
+  <div class="glass" style="padding:18px">
+    <h2>🎙 Voice & Camera</h2>
+    <div style="height:220px;border-radius:18px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px">📷 Camera Preview</div>
+    <div class="grid" style="margin-top:16px">
+      <button>🎤 Mute</button>
+      <button>📹 Camera</button>
+    </div>
+    <p>This is the frontend UI. Connect WebRTC in your backend.</p>
+  </div>
+</div>
+
+<div id="profile" class="page">
+  <div class="glass" style="padding:18px">
+    <h2>👤 My Profile</h2>
+    <div class="profile">
+      <img id="avatar" class="avatar" src="">
+      <div><input type="file" accept="image/*" onchange="avatarUpload(event)"></div>
+    </div>
+    <input id="profileName" placeholder="Display name">
+    <textarea id="profileBio" placeholder="Description"></textarea>
+    <button onclick="saveProfile()">Save Profile</button>
+  </div>
+</div>
+
+</section>
+
+<script>
+let current="home";
+function show(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(id).classList.add("active");current=id;}
+function signup(){
+ const n=bopiName.value.trim(), p=pass.value, c=confirm.value;
+ if(!n||!p)return authMsg.textContent="Fill required fields.";
+ if(p!==c)return authMsg.textContent="Passwords do not match.";
+ localStorage.setItem("bopi_user",JSON.stringify({name:n,email:email.value,password:p,bio:"Hello!",avatar:""}));
+ enter();
+}
+function login(){
+ const u=JSON.parse(localStorage.getItem("bopi_user")||"null");
+ if(!u)return authMsg.textContent="No account found.";
+ if(bopiName.value!==u.name||pass.value!==u.password)return authMsg.textContent="Wrong login.";
+ enter();
+}
+function enter(){
+ const u=JSON.parse(localStorage.getItem("bopi_user"));
+ auth.style.display="none";app.style.display="block";
+ profileName.value=u.name;profileBio.value=u.bio||"";if(u.avatar)avatar.src=u.avatar;
+}
+function saveProfile(){
+ const u=JSON.parse(localStorage.getItem("bopi_user"));
+ u.name=profileName.value;u.bio=profileBio.value;u.avatar=avatar.src;
+ localStorage.setItem("bopi_user",JSON.stringify(u));
+ alert("Saved locally");
+}
+function avatarUpload(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=x=>avatar.src=x.target.result;r.readAsDataURL(f);}
+function post(){
+ const t=postText.value.trim();if(!t)return;
+ const div=document.createElement("div");div.className="post";div.innerHTML=`<span class="badge">Game Post</span><p><b>${profileName.value}</b></p><p>${t}</p>`;
+ const f=postImg.files[0];
+ if(f){const r=new FileReader();r.onload=x=>{const i=document.createElement("img");i.src=x.target.result;i.style="width:100%;border-radius:14px";div.appendChild(i);};r.readAsDataURL(f);}
+ feed.prepend(div);postText.value="";postImg.value="";
+}
+function send(){const t=chatInput.value.trim();if(!t)return;chatBox.innerHTML+=`<div><b>${profileName.value}:</b> ${t}</div>`;chatBox.scrollTop=chatBox.scrollHeight;chatInput.value="";}
+if(localStorage.getItem("bopi_user")){bopiName.value=JSON.parse(localStorage.getItem("bopi_user")).name;}
+</script>
+</body>
+</html>
